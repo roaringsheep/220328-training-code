@@ -13,6 +13,10 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 # copying the contents of pokemonapi to docker app/src folder
 COPY ["PokemonApi/PokemonApi.csproj", "PokemonApi/"]
+COPY ["PokemonBL/PokemonBL.csproj", "PokemonBL/"]
+COPY ["PokemonDL/PokemonDL.csproj", "PokemonDL/"]
+COPY ["PokemonModels/PokemonModels.csproj", "PokemonModels/"]
+
 
 #Restores any deps that we would need
 # if the csproj files have not changed since the last build
@@ -20,11 +24,13 @@ COPY ["PokemonApi/PokemonApi.csproj", "PokemonApi/"]
 # and we don't need to run restore again.
 RUN dotnet restore "PokemonApi/PokemonApi.csproj"
 # copy all the files 
-COPY . .
+RUN ls ..
+COPY .. .
+# RUN ls
 WORKDIR "/src/PokemonApi"
 # to ensure there is no error before image is created and
 # Publishes the application and its dependencies to a folder for deployment to a hosting system.
-RUN dotnet build "PokemonApi.csproj" -c Release -o /app/build
+RUN dotnet build -c Release -o /app/build
 
 # From the build stage, I wanna get the published version of my app
 FROM build AS publish
